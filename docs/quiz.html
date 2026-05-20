@@ -3,603 +3,380 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Exam MCQ Practice | Competitive Exam Prep</title>
+<title>MCQ Practice — Competitive Exams</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f4f0; --surface: #ffffff; --surface2: #f0ede8; --text: #1a1917; --text2: #6b6860; --text3: #9b9890;
+  --border: #e2dfd9; --border2: #ccc9c2; --blue: #1a56db; --blue-bg: #eff4ff; --blue-border: #a4c0fb;
+  --green: #057a55; --green-bg: #ecfdf5; --green-border: #6ee7b7;
+  --red: #c81e1e; --red-bg: #fdf2f2; --red-border: #f8b4b4;
+  --amber: #92400e; --amber-bg: #fffbeb; --amber-border: #fcd34d;
+  --radius: 12px; --radius-sm: 8px;
+  --navy:#0b1929; --mint:#7dd8a4;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --surface2: #f0ede8;
-    --text: #1a1917;
-    --text2: #6b6860;
-    --text3: #9b9890;
-    --border: #e2dfd9;
-    --border2: #ccc9c2;
-    --blue: #1a56db;
-    --blue-bg: #eff4ff;
-    --blue-border: #a4c0fb;
-    --green: #057a55;
-    --green-bg: #ecfdf5;
-    --green-border: #6ee7b7;
-    --red: #c81e1e;
-    --red-bg: #fdf2f2;
-    --red-border: #f8b4b4;
-    --amber: #92400e;
-    --amber-bg: #fffbeb;
-    --amber-border: #fcd34d;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
+/* NAV */
+.qnav{display:flex;align-items:center;justify-content:space-between;padding:12px 5%;background:var(--navy);border-bottom:1px solid rgba(125,216,164,0.15);position:sticky;top:0;z-index:50;}
+.qnav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.qnav-logo img{width:32px;height:32px;border-radius:7px;}
+.qnav-brand{font-size:14px;font-weight:600;color:#eef8f2;}
+.qnav-right{display:flex;align-items:center;gap:10px;}
+.qnav-user{font-size:13px;color:#9db8aa;}
+.qnav-dash{font-size:13px;font-weight:500;color:var(--mint);text-decoration:none;padding:6px 14px;border:1px solid rgba(125,216,164,0.3);border-radius:8px;transition:all 0.2s;}
+.qnav-dash:hover{background:rgba(125,216,164,0.1);}
+.qnav-login{font-size:13px;font-weight:500;color:#9db8aa;text-decoration:none;padding:6px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;transition:all 0.2s;}
+.qnav-login:hover{color:#eef8f2;}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);border:1px solid rgba(125,216,164,0.4);color:var(--mint);padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;transform:translateY(10px);transition:all 0.35s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;transform:translateY(0);}
 
-  .container {
-    max-width: 680px;
-    margin: 0 auto;
-  }
-
-  /* ── HEADER ── */
-  .site-header {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-  .site-header .logo {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 99px; padding: 6px 18px 6px 10px;
-    margin-bottom: 1rem;
-  }
-  .logo-dot {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--blue); display: flex; align-items: center; justify-content: center;
-  }
-  .logo-dot svg { width: 14px; height: 14px; fill: white; }
-  .logo-text { font-size: 14px; font-weight: 600; color: var(--text); }
-  .site-header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--text); margin-bottom: 6px; }
-  .site-header p { font-size: 15px; color: var(--text2); }
-
-  /* ── CARD ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  /* ── SECTION LABEL ── */
-  .label {
-    font-size: 11px; font-weight: 600; color: var(--text3);
-    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
-  }
-
-  /* ── EXAM GRID ── */
-  .exam-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 8px; margin-bottom: 1.5rem;
-  }
-  .exam-card {
-    background: var(--surface2); border: 1.5px solid transparent;
-    border-radius: var(--radius-sm); padding: 14px 10px;
-    cursor: pointer; text-align: center; transition: all 0.15s;
-  }
-  .exam-card:hover { border-color: var(--border2); background: var(--surface); }
-  .exam-card.selected { border-color: var(--blue); background: var(--blue-bg); }
-  .exam-card .eicon { font-size: 22px; margin-bottom: 6px; }
-  .exam-card h3 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
-  .exam-card p { font-size: 10px; color: var(--text2); }
-
-  /* ── SUBJECT PILLS ── */
-  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
-  .pill {
-    padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 500;
-    cursor: pointer; background: var(--surface2); border: 1.5px solid transparent;
-    color: var(--text2); transition: all 0.12s;
-  }
-  .pill:hover { border-color: var(--border2); color: var(--text); }
-  .pill.selected { background: var(--blue-bg); border-color: var(--blue-border); color: var(--blue); }
-
-  /* ── CONFIG ROW ── */
-  .config-row { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .config-box {
-    flex: 1; min-width: 120px; background: var(--surface2);
-    border-radius: var(--radius-sm); padding: 12px 14px;
-  }
-  .config-box label { font-size: 11px; color: var(--text3); display: block; margin-bottom: 4px; font-weight: 500; }
-  .config-box select {
-    font-size: 14px; font-weight: 600; background: none; border: none;
-    color: var(--text); cursor: pointer; outline: none; font-family: inherit; width: 100%;
-  }
-
-  /* ── BUTTONS ── */
-  .btn-primary {
-    width: 100%; padding: 15px; background: var(--blue);
-    color: white; border: none; border-radius: var(--radius-sm);
-    font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: all 0.15s; font-family: inherit; letter-spacing: 0.01em;
-  }
-  .btn-primary:hover { background: #1447c0; }
-  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  .btn-secondary {
-    padding: 10px 20px; background: var(--surface); border: 1px solid var(--border2);
-    border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
-    cursor: pointer; font-family: inherit; color: var(--text); transition: all 0.12s;
-  }
-  .btn-secondary:hover { background: var(--surface2); }
-  .btn-secondary:disabled { opacity: 0.3; cursor: not-allowed; }
-
-  /* ── QUIZ HEADER ── */
-  .quiz-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .q-meta { font-size: 13px; color: var(--text2); font-weight: 500; }
-  .timer {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 99px; padding: 6px 14px;
-    font-size: 14px; font-weight: 600; color: var(--text);
-  }
-  .timer.warn { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber); }
-  .timer-icon { font-size: 14px; }
-
-  .progress-wrap { height: 5px; background: var(--surface2); border-radius: 99px; margin-bottom: 1.5rem; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width 0.4s ease; }
-
-  /* ── QUESTION CARD ── */
-  .q-tag { font-size: 11px; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
-  .q-text { font-size: 16px; color: var(--text); line-height: 1.65; font-weight: 500; }
-
-  /* ── OPTIONS ── */
-  .options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
-  .opt-btn {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--surface); border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm); padding: 13px 16px;
-    cursor: pointer; text-align: left; transition: all 0.12s;
-    font-size: 14px; color: var(--text); font-family: inherit; width: 100%;
-  }
-  .opt-btn:hover:not(:disabled) { border-color: var(--blue-border); background: var(--blue-bg); }
-  .opt-btn:disabled { cursor: default; }
-  .opt-btn.correct { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
-  .opt-btn.wrong   { background: var(--red-bg);   border-color: var(--red-border);   color: var(--red); }
-  .opt-btn.reveal  { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
-  .opt-letter {
-    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    background: var(--surface2); color: var(--text2);
-  }
-  .opt-btn.correct .opt-letter { background: var(--green-bg); color: var(--green); }
-  .opt-btn.wrong   .opt-letter { background: var(--red-bg);   color: var(--red); }
-  .opt-btn.reveal  .opt-letter { background: var(--green-bg); color: var(--green); }
-
-  /* ── EXPLANATION ── */
-  .explanation {
-    background: var(--surface2); border-radius: var(--radius-sm);
-    padding: 13px 16px; font-size: 13px; color: var(--text2);
-    line-height: 1.7; margin-top: 4px; display: none;
-    border-left: 3px solid var(--blue-border);
-  }
-  .explanation strong { color: var(--text); }
-
-  /* ── NAV ── */
-  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
-
-  /* ── RESULTS ── */
-  .result-hero { text-align: center; padding: 2rem 1rem; }
-  .score-circle {
-    width: 110px; height: 110px; border-radius: 50%;
-    border: 3px solid var(--blue); margin: 0 auto 1.5rem;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .score-num { font-size: 34px; font-weight: 700; color: var(--blue); line-height: 1; }
-  .score-den { font-size: 13px; color: var(--text2); margin-top: 2px; }
-  .result-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 6px; }
-  .result-sub { font-size: 14px; color: var(--text2); }
-
-  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.5rem; }
-  .stat {
-    background: var(--surface2); border-radius: var(--radius-sm);
-    padding: 14px; text-align: center;
-  }
-  .stat .val { font-size: 22px; font-weight: 700; }
-  .stat .lbl { font-size: 11px; color: var(--text2); margin-top: 2px; font-weight: 500; }
-  .stat.c .val { color: var(--green); }
-  .stat.w .val { color: var(--red); }
-  .stat.s .val { color: var(--amber); }
-
-  .review-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
-  .rev-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: var(--radius-sm);
-    background: var(--surface); border: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .rev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .rev-dot.c { background: var(--green); }
-  .rev-dot.w { background: var(--red); }
-  .rev-dot.s { background: var(--amber); }
-  .rev-q { flex: 1; color: var(--text); }
-  .rev-r { font-size: 12px; color: var(--text2); font-weight: 500; }
-
-  .action-row { display: flex; gap: 8px; }
-  .action-row button { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.12s; }
-  .btn-retry { background: var(--blue); color: white; border: none; }
-  .btn-retry:hover { background: #1447c0; }
-  .btn-home2 { background: var(--surface); color: var(--text); border: 1px solid var(--border2); }
-  .btn-home2:hover { background: var(--surface2); }
-
-  /* ── SCREEN ── */
-  .screen { display: none; }
-  .screen.active { display: block; }
-
-  /* ── FOOTER ── */
-  .footer { text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
-  .footer p { font-size: 12px; color: var(--text3); }
-
-  @media (max-width: 480px) {
-    .site-header h1 { font-size: 24px; }
-    .config-row { flex-direction: column; }
-    .action-row { flex-direction: column; }
-    body { padding: 1rem 0.75rem; }
-  }
+/* QUIZ LAYOUT */
+.container { padding: 1.5rem 5%; max-width: 680px; margin: 0 auto; }
+.screen { display: none; }
+.screen.active { display: block; }
+.home-header { text-align: center; margin-bottom: 2rem; }
+.home-header h1 { font-size: 22px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.home-header p { font-size: 14px; color: var(--text2); }
+.exam-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+.exam-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem; cursor: pointer; transition: all 0.15s; text-align: center; }
+.exam-card:hover { border-color: var(--border2); background: var(--surface2); }
+.exam-card.selected { border: 2px solid var(--blue-border); background: var(--blue-bg); }
+.exam-card .icon { font-size: 24px; margin-bottom: 8px; }
+.exam-card h3 { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.exam-card p { font-size: 11px; color: var(--text2); }
+.section-label { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+.subject-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+.subject-pill { padding: 6px 14px; border-radius: 99px; font-size: 13px; cursor: pointer; background: var(--surface2); border: 0.5px solid var(--border); color: var(--text); transition: all 0.12s; }
+.subject-pill:hover { border-color: var(--border2); }
+.subject-pill.selected { background: var(--blue-bg); border: 1.5px solid var(--blue-border); color: var(--blue); font-weight: 500; }
+.config-row { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.config-card { flex: 1; min-width: 120px; background: var(--surface2); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+.config-card label { font-size: 11px; color: var(--text2); display: block; margin-bottom: 6px; }
+.config-card select { font-size: 13px; font-weight: 500; background: none; border: none; color: var(--text); cursor: pointer; outline: none; width:100%; }
+.start-btn { width: 100%; padding: 14px; background: var(--blue-bg); color: var(--blue); border: 1.5px solid var(--blue-border); border-radius: var(--radius); font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.start-btn:hover { opacity: 0.88; }
+.start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.progress-meta { font-size: 13px; color: var(--text2); }
+.timer-badge { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 14px; font-weight: 500; color: var(--text); }
+.timer-badge.warning { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-border); }
+.progress-bar-wrap { height: 4px; background: var(--surface2); border-radius: 99px; margin-bottom: 1.5rem; }
+.progress-bar-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: width 0.3s ease; }
+.question-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+.question-tag { font-size: 11px; font-weight: 500; color: var(--text2); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+.question-text { font-size: 15px; color: var(--text); line-height: 1.6; }
+.options-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+.option-btn { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; cursor: pointer; text-align: left; transition: all 0.12s; font-size: 14px; color: var(--text); width: 100%; }
+.option-btn:hover:not(:disabled) { border-color: var(--border2); background: var(--surface2); }
+.option-btn:disabled { cursor: default; }
+.option-btn.correct { background: var(--green-bg); border: 1.5px solid var(--green-border); color: var(--green); }
+.option-btn.wrong { background: var(--red-bg); border: 1.5px solid var(--red-border); color: var(--red); }
+.option-btn.reveal { background: var(--green-bg); border: 1.5px solid var(--green-border); color: var(--green); }
+.option-letter { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; background: var(--surface2); color: var(--text2); }
+.option-btn.correct .option-letter, .option-btn.reveal .option-letter { background: var(--green-bg); color: var(--green); }
+.option-btn.wrong .option-letter { background: var(--red-bg); color: var(--red); }
+.explanation { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; color: var(--text2); line-height: 1.7; margin-top: 8px; display: none; border-left: 3px solid var(--blue-border); }
+.explanation strong { color: var(--text); }
+.nav-row { display: flex; justify-content: space-between; align-items: center; }
+.nav-btn { padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.12s; border: 0.5px solid var(--border2); background: var(--surface); color: var(--text); }
+.nav-btn:hover { background: var(--surface2); }
+.nav-btn.primary { background: var(--blue-bg); color: var(--blue); border-color: var(--blue-border); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.result-header { text-align: center; margin-bottom: 2rem; }
+.score-ring { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 3px solid var(--blue); }
+.score-ring .score-num { font-size: 28px; font-weight: 500; color: var(--blue); }
+.score-ring .score-den { font-size: 12px; color: var(--text2); }
+.result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+.stat-card2 { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
+.stat-card2 .val { font-size: 20px; font-weight: 500; }
+.stat-card2 .lbl { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.stat-card2.correct .val { color: var(--green); }
+.stat-card2.wrong .val { color: var(--red); }
+.stat-card2.skip .val { color: var(--amber); }
+.review-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+.review-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--surface2); font-size: 13px; }
+.review-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.review-dot.c { background: var(--green); }
+.review-dot.w { background: var(--red); }
+.review-dot.s { background: var(--amber); }
+.review-item .q-text { flex: 1; color: var(--text); }
+.review-item .q-result { font-size: 12px; color: var(--text2); }
+.action-row { display: flex; gap: 10px; }
+.action-row button { flex: 1; padding: 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.12s; }
+.btn-retry { background: var(--blue-bg); color: var(--blue); border: 1.5px solid var(--blue-border); }
+.btn-home { background: var(--surface2); color: var(--text); border: 0.5px solid var(--border2); }
+.save-note{font-size:13px;color:var(--green);text-align:center;margin-bottom:1rem;display:none;}
 </style>
 </head>
 <body>
-<div class="container">
 
-  <!-- SITE HEADER -->
-  <div class="site-header">
-    <div class="logo">
-      <div class="logo-dot">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <span class="logo-text">ExamPrep</span>
-    </div>
-    <h1>MCQ Practice</h1>
-    <p>Test your knowledge across multiple competitive exams</p>
+<nav class="qnav">
+  <a href="index.html" class="qnav-logo">
+    <img src="data:image/webp;base64,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" alt="CE"/>
+    <span class="qnav-brand">Competitive Exams</span>
+  </a>
+  <div class="qnav-right">
+    <span class="qnav-user" id="qnav-user"></span>
+    <a href="dashboard.html" class="qnav-dash" id="dash-link" style="display:none">My Dashboard →</a>
+    <a href="login.html" class="qnav-login" id="login-link">Log In</a>
   </div>
+</nav>
 
-  <!-- HOME SCREEN -->
+<div class="toast" id="toast">✓ Score saved to your dashboard!</div>
+
+<div class="container" role="main">
+  <!-- HOME -->
   <div class="screen active" id="screen-home">
-    <div class="card">
-      <div class="label">Choose your exam</div>
-      <div class="exam-grid" id="exam-grid"></div>
-
-      <div class="label">Select subject</div>
-      <div class="pill-row" id="subject-row">
-        <span style="font-size:13px; color:var(--text3);">Select an exam first</span>
-      </div>
-
-      <div class="label">Quiz settings</div>
-      <div class="config-row">
-        <div class="config-box">
-          <label>Questions</label>
-          <select id="q-count"><option>5</option><option selected>10</option><option>15</option></select>
-        </div>
-        <div class="config-box">
-          <label>Time per question</label>
-          <select id="q-time"><option value="30">30 sec</option><option value="60" selected>1 min</option><option value="90">90 sec</option></select>
-        </div>
-        <div class="config-box">
-          <label>Difficulty</label>
-          <select id="q-diff"><option>Mixed</option><option>Easy</option><option>Hard</option></select>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="start-btn" disabled onclick="startQuiz()">▶ Start Quiz</button>
+    <div class="home-header">
+      <h1>MCQ Practice</h1>
+      <p>Pick your exam, subject and start practising</p>
     </div>
+    <div class="section-label">Select exam</div>
+    <div class="exam-grid" id="exam-grid"></div>
+    <div class="section-label">Select subject</div>
+    <div class="subject-row" id="subject-row"></div>
+    <div class="config-row">
+      <div class="config-card"><label>No. of questions</label><select id="q-count"><option>5</option><option selected>10</option><option>15</option></select></div>
+      <div class="config-card"><label>Time per question</label><select id="q-time"><option value="30">30 sec</option><option value="60" selected>1 min</option><option value="90">90 sec</option></select></div>
+      <div class="config-card"><label>Difficulty</label><select id="q-diff"><option>Mixed</option><option>Easy</option><option>Hard</option></select></div>
+    </div>
+    <button class="start-btn" id="start-btn" disabled onclick="startQuiz()">▶ Start Quiz</button>
   </div>
 
-  <!-- QUIZ SCREEN -->
+  <!-- QUIZ -->
   <div class="screen" id="screen-quiz">
-    <div class="quiz-topbar">
-      <span class="q-meta" id="q-meta">Question 1 of 10</span>
-      <div class="timer" id="timer-badge">
-        <span class="timer-icon">⏱</span>
-        <span id="timer-display">1:00</span>
-      </div>
+    <div class="quiz-header">
+      <span class="progress-meta" id="q-meta">Question 1 of 10</span>
+      <div class="timer-badge" id="timer-badge">⏱ <span id="timer-display">1:00</span></div>
     </div>
-    <div class="progress-wrap"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-
-    <div class="card">
-      <div class="q-tag" id="q-tag">UPSC · General Studies</div>
-      <div class="q-text" id="q-text"></div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="question-card">
+      <div class="question-tag" id="q-tag"></div>
+      <div class="question-text" id="q-text"></div>
     </div>
-
-    <div class="options" id="options-list"></div>
+    <div class="options-list" id="options-list"></div>
     <div class="explanation" id="explanation"></div>
-
-    <div class="nav-row">
-      <button class="btn-secondary" id="btn-skip" onclick="skipQuestion()">Skip →</button>
-      <button class="btn-primary" id="btn-next" onclick="nextQuestion()" disabled style="width:auto; padding:10px 24px;">Next →</button>
+    <div class="nav-row" style="margin-top:1rem">
+      <button class="nav-btn" id="btn-skip" onclick="skipQuestion()">Skip</button>
+      <button class="nav-btn primary" id="btn-next" onclick="nextQuestion()" disabled>Next →</button>
     </div>
   </div>
 
-  <!-- RESULT SCREEN -->
+  <!-- RESULT -->
   <div class="screen" id="screen-result">
-    <div class="card result-hero">
-      <div class="score-circle">
-        <div class="score-num" id="res-score">0</div>
-        <div class="score-den" id="res-total">/10</div>
-      </div>
-      <div class="result-title" id="res-title">Well done!</div>
-      <div class="result-sub" id="res-sub">Keep practising to improve.</div>
+    <div class="result-header">
+      <div class="score-ring"><span class="score-num" id="res-score">0</span><span class="score-den" id="res-total">/10</span></div>
+      <h2 style="font-size:18px;font-weight:500;margin-bottom:4px" id="res-title">Well done!</h2>
+      <p style="font-size:13px;color:var(--text2)" id="res-sub"></p>
     </div>
-
-    <div class="stats-row">
-      <div class="stat c"><div class="val" id="res-correct">0</div><div class="lbl">Correct</div></div>
-      <div class="stat w"><div class="val" id="res-wrong">0</div><div class="lbl">Wrong</div></div>
-      <div class="stat s"><div class="val" id="res-skip">0</div><div class="lbl">Skipped</div></div>
+    <div class="save-note" id="save-note">✓ Score saved to your dashboard!</div>
+    <div class="result-stats">
+      <div class="stat-card2 correct"><div class="val" id="res-correct">0</div><div class="lbl">Correct</div></div>
+      <div class="stat-card2 wrong"><div class="val" id="res-wrong">0</div><div class="lbl">Wrong</div></div>
+      <div class="stat-card2 skip"><div class="val" id="res-skip">0</div><div class="lbl">Skipped</div></div>
     </div>
-
-    <div class="label">Answer review</div>
+    <div class="section-label">Review answers</div>
     <div class="review-list" id="review-list"></div>
-
     <div class="action-row">
-      <button class="btn-retry" onclick="retryQuiz()">↺ Retry Quiz</button>
-      <button class="btn-home2" onclick="goHome()">← New Quiz</button>
+      <button class="btn-retry" onclick="retryQuiz()">↺ Retry</button>
+      <button class="btn-home" onclick="goHome()">← New Quiz</button>
     </div>
   </div>
-
-  <div class="footer"><p>Built for competitive exam preparation · Add your own questions anytime</p></div>
 </div>
 
 <script>
+// Supabase
+const { createClient } = supabase;
+const sb = createClient('https://iugqkcvnzcvyvvbeistr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Z3FrY3ZuemN2eXZ2YmVpc3RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNDU1MDgsImV4cCI6MjA5NDgyMTUwOH0.qYw0DCUn49TBoKr6LHfrvJGlPEMsbRLXGXz7Zux5U8o');
+let currentUser = null;
+
+sb.auth.getSession().then(({data:{session}}) => {
+  if (session) {
+    currentUser = session.user;
+    const name = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
+    document.getElementById('qnav-user').textContent = name.split(' ')[0];
+    document.getElementById('dash-link').style.display = 'inline-flex';
+    document.getElementById('login-link').style.display = 'none';
+  }
+});
+
+// Quiz Data
 const EXAMS = [
-  { id:'upsc',    label:'UPSC / PSC',    icon:'🏛️', desc:'Civil Services' },
-  { id:'banking', label:'Banking / SSC', icon:'🏦', desc:'IBPS, SBI, SSC' },
-  { id:'jee',     label:'JEE',           icon:'⚛️', desc:'Engineering' },
-  { id:'neet',    label:'NEET',          icon:'🩺', desc:'Medical' },
-  { id:'defence', label:'Defence',       icon:'🛡️', desc:'NDA, CDS, AFCAT' },
+  {id:'upsc',label:'UPSC / PSC',icon:'🏛️',desc:'Civil Services'},
+  {id:'banking',label:'Banking / SSC',icon:'🏦',desc:'IBPS, SBI, SSC'},
+  {id:'jee',label:'JEE',icon:'⚛️',desc:'Engineering'},
+  {id:'neet',label:'NEET',icon:'🩺',desc:'Medical'},
+  {id:'defence',label:'Defence',icon:'🛡️',desc:'NDA, CDS, AFCAT'},
 ];
-
 const SUBJECTS = {
-  upsc:    ['General Studies','History','Geography','Polity','Economy','Environment'],
-  banking: ['Quantitative Aptitude','Reasoning','English','General Awareness','Computer'],
-  jee:     ['Physics','Chemistry','Mathematics'],
-  neet:    ['Physics','Chemistry','Biology'],
-  defence: ['General Knowledge','Mathematics','English','Reasoning'],
+  upsc:['General Studies','History','Geography','Polity','Economy','Environment'],
+  banking:['Quantitative Aptitude','Reasoning','English','General Awareness','Computer'],
+  jee:['Physics','Chemistry','Mathematics'],
+  neet:['Physics','Chemistry','Biology'],
+  defence:['General Knowledge','Mathematics','English','Reasoning'],
 };
-
 const QUESTIONS = {
-  upsc: {
-    'General Studies': [
-      { q:'Which article of the Indian Constitution abolishes untouchability?', opts:['Article 14','Article 17','Article 21','Article 25'], ans:1, exp:'Article 17 of the Indian Constitution abolishes untouchability in all its forms and makes its practice a punishable offence.' },
-      { q:'The "Directive Principles of State Policy" are borrowed from which country\'s constitution?', opts:['USA','UK','Ireland','Canada'], ans:2, exp:'The Directive Principles of State Policy (DPSP) are borrowed from the Irish Constitution. They are non-justiciable guidelines for governance.' },
-      { q:'Which river is known as the "Sorrow of Bihar"?', opts:['Ganga','Son','Kosi','Gandak'], ans:2, exp:'The Kosi river is called the Sorrow of Bihar because it frequently changes its course and causes devastating floods in Bihar.' },
-      { q:'Who appoints the Chief Election Commissioner of India?', opts:['Prime Minister','President','Chief Justice','Parliament'], ans:1, exp:'The Chief Election Commissioner of India is appointed by the President of India on the advice of the Council of Ministers.' },
-      { q:'The Preamble of the Indian Constitution was amended in which year?', opts:['1971','1973','1976','1979'], ans:2, exp:'The Preamble was amended by the 42nd Constitutional Amendment in 1976, adding the words "Socialist", "Secular" and "Integrity".' },
-      { q:'Which Five-Year Plan gave priority to agriculture and allied activities?', opts:['1st Plan','3rd Plan','5th Plan','6th Plan'], ans:0, exp:'The First Five-Year Plan (1951–56) gave top priority to agriculture, land reforms and irrigation to address food shortages after partition.' },
-      { q:'In which year was the first National Emergency proclaimed in independent India?', opts:['1947','1962','1965','1971'], ans:1, exp:'The first National Emergency was proclaimed in 1962 during the Indo-China War under Article 352 of the Constitution.' },
-    ],
-    'History': [
-      { q:'The Battle of Plassey was fought in the year:', opts:['1747','1757','1761','1764'], ans:1, exp:'The Battle of Plassey was fought on 23 June 1757 between the British East India Company and Siraj ud-Daulah, the Nawab of Bengal.' },
-      { q:'Who founded the Indian National Congress in 1885?', opts:['Dadabhai Naoroji','Gopal Krishna Gokhale','A.O. Hume','Bal Gangadhar Tilak'], ans:2, exp:'Allan Octavian Hume, a retired British civil servant, founded the Indian National Congress in 1885.' },
-      { q:'The "Dandi March" is associated with which movement?', opts:['Non-Cooperation','Civil Disobedience','Quit India','Swadeshi'], ans:1, exp:'The Dandi March (1930) initiated the Civil Disobedience Movement. Gandhi led 241 miles from Sabarmati Ashram to Dandi to protest the salt tax.' },
-      { q:'Chandragupta Maurya overthrew which dynasty to establish the Maurya Empire?', opts:['Nanda','Gupta','Kushana','Sunga'], ans:0, exp:'Chandragupta Maurya, with the help of Chanakya, defeated the last Nanda ruler Dhana Nanda around 322 BCE.' },
-      { q:'The Jallianwala Bagh massacre took place in which year?', opts:['1915','1917','1919','1921'], ans:2, exp:'The Jallianwala Bagh massacre took place on 13 April 1919 in Amritsar, when General Dyer ordered troops to fire on a peaceful gathering.' },
-    ],
-    'Geography': [
-      { q:'Tropic of Cancer passes through how many Indian states?', opts:['6','7','8','9'], ans:2, exp:'The Tropic of Cancer passes through 8 Indian states: Gujarat, Rajasthan, MP, Chhattisgarh, Jharkhand, West Bengal, Tripura and Mizoram.' },
-      { q:'The Western Ghats are also known as:', opts:['Vindhyas','Satpura','Sahyadri','Aravalli'], ans:2, exp:'The Western Ghats are also called the Sahyadri mountains. They are a UNESCO World Heritage site running parallel to India\'s western coast.' },
-      { q:'Which is the largest river island in the world, located in India?', opts:['Srirangam','Majuli','Bhavani','Wheeler'], ans:1, exp:'Majuli in the Brahmaputra river, Assam, is considered the world\'s largest river island and is also a UNESCO candidate heritage site.' },
-    ],
-    'Polity': [
-      { q:'Which schedule of the Indian Constitution contains the list of recognised languages?', opts:['Sixth Schedule','Seventh Schedule','Eighth Schedule','Ninth Schedule'], ans:2, exp:'The Eighth Schedule of the Indian Constitution contains the list of 22 officially recognised languages of India.' },
-      { q:'The concept of "Basic Structure" of the Constitution was established in which case?', opts:['Golaknath Case','Kesavananda Bharati Case','Minerva Mills Case','Maneka Gandhi Case'], ans:1, exp:'The Basic Structure doctrine was established by the Supreme Court in the Kesavananda Bharati Case (1973), limiting Parliament\'s power to amend the Constitution.' },
-    ],
-  },
-  banking: {
-    'Quantitative Aptitude': [
-      { q:'If a train travels 360 km in 4 hours, what is its speed in km/h?', opts:['80','85','90','95'], ans:2, exp:'Speed = Distance ÷ Time = 360 ÷ 4 = 90 km/h.' },
-      { q:'What is 15% of 840?', opts:['116','126','136','146'], ans:1, exp:'15% of 840 = (15 ÷ 100) × 840 = 126.' },
-      { q:'A sum of ₹5000 is invested at 10% per annum simple interest for 3 years. Find the interest.', opts:['₹1200','₹1400','₹1500','₹1600'], ans:2, exp:'SI = (P × R × T) ÷ 100 = (5000 × 10 × 3) ÷ 100 = ₹1500.' },
-      { q:'The average of 5 consecutive even numbers is 24. What is the largest number?', opts:['26','28','30','32'], ans:1, exp:'Middle number = average = 24. Numbers: 20, 22, 24, 26, 28. Largest = 28.' },
-      { q:'If 40% of a number is 120, what is 60% of that number?', opts:['160','170','180','190'], ans:2, exp:'40% of x = 120 → x = 300. 60% of 300 = 180.' },
-      { q:'A shopkeeper marks an item 25% above cost price and gives 10% discount. What is the profit %?', opts:['10.5%','12.5%','15%','17.5%'], ans:1, exp:'Let CP = 100. MP = 125. After 10% discount, SP = 125 × 0.9 = 112.5. Profit = 12.5%.' },
-    ],
-    'Reasoning': [
-      { q:'Find the odd one out: 17, 23, 29, 35, 37', opts:['17','29','35','37'], ans:2, exp:'All are prime except 35 (= 5 × 7). So 35 is the odd one out.' },
-      { q:'If BOOK is coded as CPPL, how is MOON coded?', opts:['NPPO','NPPN','NOON','NOPO'], ans:0, exp:'Each letter is shifted +1: M→N, O→P, O→P, N→O. So MOON = NPPO.' },
-      { q:'Pointing to a photo, a man says "Her father is the only son of my grandfather." Who is the woman?', opts:['Sister','Daughter','Mother','Cousin'], ans:0, exp:'Only son of grandfather = his father. Her father = his father → she is his sister.' },
-      { q:'If A is 3 km east of B, and C is 4 km north of A, how far is C from B?', opts:['4 km','5 km','6 km','7 km'], ans:1, exp:'Using Pythagoras: BC = √(AB² + AC²) = √(9 + 16) = √25 = 5 km.' },
-    ],
-    'General Awareness': [
-      { q:'The Reserve Bank of India was established in:', opts:['1930','1935','1940','1945'], ans:1, exp:'The Reserve Bank of India was established on 1 April 1935 under the Reserve Bank of India Act, 1934.' },
-      { q:'Which is the largest commercial bank in India?', opts:['Punjab National Bank','HDFC Bank','ICICI Bank','State Bank of India'], ans:3, exp:'State Bank of India (SBI) is the largest commercial bank in India in terms of assets, deposits and number of branches.' },
-      { q:'Repo rate is the rate at which:', opts:['Banks lend to public','RBI lends to banks','Banks lend to RBI','Government borrows'], ans:1, exp:'Repo rate is the rate at which the RBI lends short-term money to commercial banks against government securities.' },
-    ],
-  },
-  jee: {
-    'Physics': [
-      { q:'The SI unit of electric charge is:', opts:['Ampere','Volt','Coulomb','Ohm'], ans:2, exp:'The SI unit of electric charge is the Coulomb (C). One Coulomb is the charge carried by approximately 6.24 × 10¹⁸ electrons.' },
-      { q:'A projectile gives maximum range at which launch angle?', opts:['30°','45°','60°','90°'], ans:1, exp:'Range R = u²sin(2θ)/g. Maximum when sin(2θ) = 1, i.e., θ = 45°.' },
-      { q:'Which law states "For every action there is an equal and opposite reaction"?', opts:["Newton's 1st Law","Newton's 2nd Law","Newton's 3rd Law","Hooke's Law"], ans:2, exp:"Newton's Third Law: for every action there is an equal and opposite reaction, acting on two different bodies." },
-      { q:'The dimensional formula of Power is:', opts:['MLT⁻²','ML²T⁻²','ML²T⁻³','ML³T⁻³'], ans:2, exp:'Power = Work/Time. Work = Force × Distance = MLT⁻² × L = ML²T⁻². Power = ML²T⁻² / T = ML²T⁻³.' },
-    ],
-    'Chemistry': [
-      { q:'The atomic number of Carbon is:', opts:['4','6','8','12'], ans:1, exp:'Carbon has atomic number 6, meaning 6 protons in its nucleus. Its mass number is 12.' },
-      { q:'Which is the most electronegative element?', opts:['Oxygen','Chlorine','Fluorine','Nitrogen'], ans:2, exp:'Fluorine (F) is the most electronegative element on the Pauling scale with a value of 3.98.' },
-      { q:'pH of pure water at 25°C is:', opts:['0','6','7','14'], ans:2, exp:'Pure water at 25°C is neutral with pH = 7. pH = −log[H⁺] = −log[10⁻⁷] = 7.' },
-      { q:'Avogadro\'s number is approximately:', opts:['6.022 × 10²¹','6.022 × 10²³','6.022 × 10²⁵','3.011 × 10²³'], ans:1, exp:'Avogadro\'s number (Nₐ) = 6.022 × 10²³ mol⁻¹. It represents the number of entities in one mole of substance.' },
-    ],
-    'Mathematics': [
-      { q:'The value of sin²θ + cos²θ is:', opts:['0','1','2','−1'], ans:1, exp:'This is the fundamental Pythagorean identity: sin²θ + cos²θ = 1 for all values of θ.' },
-      { q:'The derivative of eˣ is:', opts:['eˣ⁻¹','xeˣ⁻¹','eˣ','1/eˣ'], ans:2, exp:'The exponential function eˣ is its own derivative: d/dx(eˣ) = eˣ. This is its unique property.' },
-      { q:'How many ways can 4 people be arranged in a line?', opts:['4','12','24','48'], ans:2, exp:'The number of arrangements of 4 people = 4! = 4 × 3 × 2 × 1 = 24.' },
-    ],
-  },
-  neet: {
-    'Biology': [
-      { q:'The powerhouse of the cell is:', opts:['Nucleus','Ribosome','Mitochondria','Golgi body'], ans:2, exp:'Mitochondria produce ATP (energy) through cellular respiration and are hence called the powerhouse of the cell.' },
-      { q:'DNA replication is:', opts:['Conservative','Semiconservative','Dispersive','None'], ans:1, exp:'DNA replication is semiconservative — proven by the Meselson–Stahl experiment (1958). Each new DNA has one old and one new strand.' },
-      { q:'Which blood group is the universal donor?', opts:['A','B','AB','O'], ans:3, exp:'Blood group O (O-negative) is the universal donor — it lacks A, B and Rh antigens, making it compatible with all blood groups.' },
-      { q:'The functional unit of the kidney is:', opts:['Neuron','Nephron','Alveolus','Villus'], ans:1, exp:'The nephron is the structural and functional unit of the kidney. Each kidney contains about 1 million nephrons.' },
-    ],
-    'Physics': [
-      { q:'The unit of force in SI system is:', opts:['Joule','Newton','Watt','Pascal'], ans:1, exp:'The SI unit of force is the Newton (N). 1 N = force needed to accelerate 1 kg at 1 m/s².' },
-      { q:'Which mirror is used as a rear-view mirror in vehicles?', opts:['Plane mirror','Concave mirror','Convex mirror','Parabolic mirror'], ans:2, exp:'Convex mirrors are used as rear-view mirrors because they give a wider field of view and always form erect, diminished images.' },
-    ],
-    'Chemistry': [
-      { q:'Glucose is classified as a:', opts:['Disaccharide','Polysaccharide','Monosaccharide','Oligosaccharide'], ans:2, exp:'Glucose (C₆H₁₂O₆) is a monosaccharide — the simplest carbohydrate unit that cannot be further hydrolysed.' },
-      { q:'Which gas is produced when dilute HCl reacts with zinc?', opts:['Oxygen','Chlorine','Hydrogen','Nitrogen'], ans:2, exp:'Zn + 2HCl → ZnCl₂ + H₂↑. Hydrogen gas is produced when zinc reacts with dilute hydrochloric acid.' },
-    ],
-  },
-  defence: {
-    'General Knowledge': [
-      { q:'INS Vikrant is a:', opts:['Submarine','Destroyer','Aircraft Carrier','Frigate'], ans:2, exp:'INS Vikrant (commissioned Sept 2022) is India\'s first domestically built aircraft carrier, built by Cochin Shipyard Limited.' },
-      { q:'The National Defence Academy (NDA) is located at:', opts:['Pune','Delhi','Dehradun','Chennai'], ans:0, exp:'NDA is located at Khadakwasla, near Pune, Maharashtra. It is a tri-service defence institution of India.' },
-      { q:'AFCAT stands for:', opts:['Air Force Combat Aptitude Test','Air Force Common Admission Test','Armed Forces Cadet Admission Test','Air Force Cadet Aptitude Test'], ans:1, exp:'AFCAT = Air Force Common Admission Test, conducted by the Indian Air Force to recruit officers.' },
-      { q:'Which is the highest gallantry award in India?', opts:['Vir Chakra','Mahavir Chakra','Param Vir Chakra','Ashoka Chakra'], ans:2, exp:'Param Vir Chakra is the highest gallantry award in India, awarded for the most conspicuous bravery in the presence of the enemy.' },
-    ],
-    'Mathematics': [
-      { q:'What is the LCM of 12 and 18?', opts:['24','36','48','72'], ans:1, exp:'12 = 2² × 3, 18 = 2 × 3². LCM = 2² × 3² = 36.' },
-      { q:'A circle has radius 7 cm. What is its area? (π = 22/7)', opts:['44 cm²','88 cm²','154 cm²','308 cm²'], ans:2, exp:'Area = πr² = (22/7) × 49 = 154 cm².' },
-      { q:'If 3x + 7 = 22, what is x?', opts:['3','4','5','6'], ans:2, exp:'3x = 22 − 7 = 15. x = 15 ÷ 3 = 5.' },
-    ],
-    'Reasoning': [
-      { q:'Find the next number: 2, 6, 12, 20, 30, ?', opts:['40','42','44','46'], ans:1, exp:'Differences: 4, 6, 8, 10, 12. Next = 30 + 12 = 42.' },
-      { q:'If all cats are animals and all animals are living beings, then all cats are:', opts:['Animals only','Living beings','Plants','None'], ans:1, exp:'All cats → animals → living beings. Therefore all cats are living beings (syllogism).' },
-    ],
-  },
+  upsc:{'General Studies':[
+    {q:'Which article of the Indian Constitution abolishes untouchability?',opts:['Article 14','Article 17','Article 21','Article 25'],ans:1,exp:'Article 17 abolishes untouchability in all forms and makes its practice a punishable offence.'},
+    {q:'The Directive Principles of State Policy are borrowed from which constitution?',opts:['USA','UK','Ireland','Canada'],ans:2,exp:'DPSP are borrowed from the Irish Constitution. They are non-justiciable guidelines for governance.'},
+    {q:'Which river is known as the "Sorrow of Bihar"?',opts:['Ganga','Son','Kosi','Gandak'],ans:2,exp:'The Kosi river is called Sorrow of Bihar as it frequently changes course causing devastating floods.'},
+    {q:'Who appoints the Chief Election Commissioner of India?',opts:['Prime Minister','President','Chief Justice','Parliament'],ans:1,exp:'The Chief Election Commissioner is appointed by the President of India.'},
+    {q:'The Preamble was amended by which Constitutional Amendment?',opts:['40th','42nd','44th','46th'],ans:1,exp:'The 42nd Amendment (1976) added "Socialist", "Secular" and "Integrity" to the Preamble.'},
+    {q:'Which Five-Year Plan gave priority to agriculture?',opts:['1st Plan','3rd Plan','5th Plan','6th Plan'],ans:0,exp:'The First Five-Year Plan (1951-56) gave top priority to agriculture and irrigation.'},
+    {q:'The concept of Basic Structure was established in which case?',opts:['Golaknath Case','Kesavananda Bharati Case','Minerva Mills Case','Maneka Gandhi Case'],ans:1,exp:'The Basic Structure doctrine was established in the Kesavananda Bharati Case (1973).'},
+  ],
+  'History':[
+    {q:'The Battle of Plassey was fought in the year:',opts:['1747','1757','1761','1764'],ans:1,exp:'Battle of Plassey was fought on 23 June 1757 between the British East India Company and Siraj ud-Daulah.'},
+    {q:'Who founded the Indian National Congress in 1885?',opts:['Dadabhai Naoroji','Gopal Krishna Gokhale','A.O. Hume','Bal Gangadhar Tilak'],ans:2,exp:'A.O. Hume, a retired British civil servant, founded the INC in 1885.'},
+    {q:'The Dandi March initiated which movement?',opts:['Non-Cooperation','Civil Disobedience','Quit India','Swadeshi'],ans:1,exp:'The Dandi March (1930) initiated the Civil Disobedience Movement against the salt tax.'},
+    {q:'The Jallianwala Bagh massacre took place in:',opts:['1915','1917','1919','1921'],ans:2,exp:'The Jallianwala Bagh massacre occurred on 13 April 1919 in Amritsar.'},
+  ],
+  'Geography':[
+    {q:'Tropic of Cancer passes through how many Indian states?',opts:['6','7','8','9'],ans:2,exp:'It passes through 8 states: Gujarat, Rajasthan, MP, Chhattisgarh, Jharkhand, West Bengal, Tripura and Mizoram.'},
+    {q:'The Western Ghats are also known as:',opts:['Vindhyas','Satpura','Sahyadri','Aravalli'],ans:2,exp:'The Western Ghats are called Sahyadri mountains — a UNESCO World Heritage site.'},
+    {q:'Which is the largest river island in the world located in India?',opts:['Srirangam','Majuli','Bhavani','Wheeler'],ans:1,exp:"Majuli in the Brahmaputra river, Assam, is the world's largest river island."},
+  ],
+  'Polity':[
+    {q:'Which schedule contains the list of recognised languages?',opts:['Sixth','Seventh','Eighth','Ninth'],ans:2,exp:'The Eighth Schedule contains the 22 officially recognised languages of India.'},
+    {q:'The President of India is elected by:',opts:['Direct election by people','Elected members of Parliament only','Elected members of Parliament and State Legislatures','All members of Parliament'],ans:2,exp:'The President is elected by elected members of both Houses of Parliament and State Legislative Assemblies.'},
+  ],
+  'Economy':[
+    {q:'The Reserve Bank of India was established in:',opts:['1930','1935','1940','1945'],ans:1,exp:'RBI was established on 1 April 1935 under the Reserve Bank of India Act, 1934.'},
+    {q:'Which body presents the Union Budget in India?',opts:['RBI','NITI Aayog','Finance Ministry','Planning Commission'],ans:2,exp:'The Finance Ministry, specifically the Finance Minister, presents the Union Budget in Parliament.'},
+  ]},
+  banking:{'Quantitative Aptitude':[
+    {q:'If a train travels 360 km in 4 hours, what is its speed?',opts:['80 km/h','85 km/h','90 km/h','95 km/h'],ans:2,exp:'Speed = Distance ÷ Time = 360 ÷ 4 = 90 km/h.'},
+    {q:'What is 15% of 840?',opts:['116','126','136','146'],ans:1,exp:'15% of 840 = (15÷100) × 840 = 126.'},
+    {q:'SI on ₹5000 at 10% for 3 years?',opts:['₹1200','₹1400','₹1500','₹1600'],ans:2,exp:'SI = (P×R×T)÷100 = (5000×10×3)÷100 = ₹1500.'},
+    {q:'Average of 5 consecutive even numbers is 24. Largest number?',opts:['26','28','30','32'],ans:1,exp:'Middle = 24. Numbers: 20,22,24,26,28. Largest = 28.'},
+    {q:'If 40% of a number is 120, what is 60% of it?',opts:['160','170','180','190'],ans:2,exp:'40% of x = 120 → x = 300. 60% of 300 = 180.'},
+  ],
+  'Reasoning':[
+    {q:'Find the odd one out: 17, 23, 29, 35, 37',opts:['17','29','35','37'],ans:2,exp:'All are prime except 35 (= 5×7). So 35 is the odd one out.'},
+    {q:'If BOOK is coded as CPPL, how is MOON coded?',opts:['NPPO','NPPN','NOON','NOPO'],ans:0,exp:'Each letter +1: M→N, O→P, O→P, N→O. MOON = NPPO.'},
+    {q:'A is 3 km east of B. C is 4 km north of A. Distance of C from B?',opts:['4 km','5 km','6 km','7 km'],ans:1,exp:'BC = √(3²+4²) = √25 = 5 km (Pythagoras).'},
+  ],
+  'General Awareness':[
+    {q:'Repo rate is the rate at which:',opts:['Banks lend to public','RBI lends to banks','Banks lend to RBI','Government borrows'],ans:1,exp:'Repo rate is the rate at which the RBI lends short-term money to commercial banks.'},
+    {q:'Which is the largest commercial bank in India?',opts:['Punjab National Bank','HDFC Bank','ICICI Bank','State Bank of India'],ans:3,exp:'State Bank of India (SBI) is the largest commercial bank in India.'},
+  ]},
+  jee:{'Physics':[
+    {q:'The SI unit of electric charge is:',opts:['Ampere','Volt','Coulomb','Ohm'],ans:2,exp:'The SI unit of electric charge is the Coulomb (C).'},
+    {q:'Maximum range of a projectile is at angle:',opts:['30°','45°','60°','90°'],ans:1,exp:'R = u²sin(2θ)/g is maximum when θ = 45°.'},
+    {q:"Newton's Third Law states:",opts:['F=ma','Every action has equal and opposite reaction','Objects at rest stay at rest','Energy is conserved'],ans:1,exp:"Newton's Third Law: every action has an equal and opposite reaction."},
+  ],
+  'Chemistry':[
+    {q:'Atomic number of Carbon is:',opts:['4','6','8','12'],ans:1,exp:'Carbon has atomic number 6 — 6 protons in its nucleus.'},
+    {q:'Most electronegative element:',opts:['Oxygen','Chlorine','Fluorine','Nitrogen'],ans:2,exp:'Fluorine is the most electronegative element (Pauling scale: 3.98).'},
+    {q:'pH of pure water at 25°C:',opts:['0','6','7','14'],ans:2,exp:'Pure water at 25°C is neutral — pH = 7.'},
+  ],
+  'Mathematics':[
+    {q:'Value of sin²θ + cos²θ:',opts:['0','1','2','-1'],ans:1,exp:'This is the fundamental Pythagorean identity: sin²θ + cos²θ = 1.'},
+    {q:'Derivative of eˣ is:',opts:['eˣ⁻¹','xeˣ⁻¹','eˣ','1/eˣ'],ans:2,exp:'eˣ is its own derivative: d/dx(eˣ) = eˣ.'},
+  ]},
+  neet:{'Biology':[
+    {q:'Powerhouse of the cell is:',opts:['Nucleus','Ribosome','Mitochondria','Golgi body'],ans:2,exp:'Mitochondria produce ATP through cellular respiration — called the powerhouse of the cell.'},
+    {q:'DNA replication is:',opts:['Conservative','Semiconservative','Dispersive','None'],ans:1,exp:'DNA replication is semiconservative — proven by Meselson-Stahl experiment (1958).'},
+    {q:'Universal blood donor group is:',opts:['A','B','AB','O'],ans:3,exp:'Blood group O (O-negative) is the universal donor — lacks A, B and Rh antigens.'},
+    {q:'Functional unit of kidney is:',opts:['Neuron','Nephron','Alveolus','Villus'],ans:1,exp:'The nephron is the structural and functional unit of the kidney.'},
+  ],
+  'Chemistry':[
+    {q:'Glucose is classified as a:',opts:['Disaccharide','Polysaccharide','Monosaccharide','Oligosaccharide'],ans:2,exp:'Glucose (C₆H₁₂O₆) is a monosaccharide — the simplest carbohydrate unit.'},
+    {q:'Gas produced when Zn reacts with dilute HCl:',opts:['Oxygen','Chlorine','Hydrogen','Nitrogen'],ans:2,exp:'Zn + 2HCl → ZnCl₂ + H₂↑. Hydrogen gas is produced.'},
+  ],
+  'Physics':[
+    {q:'Mirror used as rear-view mirror in vehicles:',opts:['Plane','Concave','Convex','Parabolic'],ans:2,exp:'Convex mirrors are used as rear-view mirrors — wider field of view, always erect image.'},
+  ]},
+  defence:{'General Knowledge':[
+    {q:'INS Vikrant is a:',opts:['Submarine','Destroyer','Aircraft Carrier','Frigate'],ans:2,exp:"INS Vikrant (2022) is India's first domestically built aircraft carrier."},
+    {q:'NDA is located at:',opts:['Pune','Delhi','Dehradun','Chennai'],ans:0,exp:'NDA is located at Khadakwasla, near Pune, Maharashtra.'},
+    {q:'AFCAT stands for:',opts:['Air Force Combat Aptitude Test','Air Force Common Admission Test','Armed Forces Cadet Admission Test','Air Force Cadet Aptitude Test'],ans:1,exp:'AFCAT = Air Force Common Admission Test, conducted by the Indian Air Force.'},
+    {q:'Highest gallantry award in India:',opts:['Vir Chakra','Mahavir Chakra','Param Vir Chakra','Ashoka Chakra'],ans:2,exp:'Param Vir Chakra is the highest gallantry award in India.'},
+  ],
+  'Mathematics':[
+    {q:'LCM of 12 and 18:',opts:['24','36','48','72'],ans:1,exp:'12=2²×3, 18=2×3². LCM=2²×3²=36.'},
+    {q:'Area of circle with radius 7 cm (π=22/7):',opts:['44 cm²','88 cm²','154 cm²','308 cm²'],ans:2,exp:'Area=πr²=(22/7)×49=154 cm².'},
+  ],
+  'Reasoning':[
+    {q:'Next in series: 2,6,12,20,30,?',opts:['40','42','44','46'],ans:1,exp:'Differences: 4,6,8,10,12. Next = 30+12 = 42.'},
+  ]},
 };
 
-let selExam=null, selSub=null;
-let quiz=[], cur=0, ans=[], timerIv=null, timeLeft=60, tPerQ=60;
+let selExam=null,selSub=null,quiz=[],cur=0,ans=[],timerIv=null,timeLeft=60,tPerQ=60;
 
-function renderExams() {
-  document.getElementById('exam-grid').innerHTML = EXAMS.map(e =>
-    `<div class="exam-card" onclick="pickExam('${e.id}')" id="ec-${e.id}">
-      <div class="eicon">${e.icon}</div><h3>${e.label}</h3><p>${e.desc}</p>
-    </div>`).join('');
+function renderExams(){
+  document.getElementById('exam-grid').innerHTML=EXAMS.map(e=>
+    '<div class="exam-card" onclick="pickExam(\''+e.id+'\')" id="ec-'+e.id+'"><div class="icon">'+e.icon+'</div><h3>'+e.label+'</h3><p>'+e.desc+'</p></div>').join('');
 }
-
-function pickExam(id) {
-  selExam=id; selSub=null;
+function pickExam(id){
+  selExam=id;selSub=null;
   document.querySelectorAll('.exam-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('ec-'+id).classList.add('selected');
-  const subs = SUBJECTS[id]||[];
-  document.getElementById('subject-row').innerHTML = subs.map(s=>
-    `<div class="pill" onclick="pickSub(this,'${s}')">${s}</div>`).join('');
+  document.getElementById('subject-row').innerHTML=(SUBJECTS[id]||[]).map(s=>
+    '<div class="subject-pill" onclick="pickSub(this,\''+s+'\')">'+s+'</div>').join('');
   updateBtn();
 }
-
-function pickSub(el,s) {
+function pickSub(el,s){
   selSub=s;
-  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
-  el.classList.add('selected'); updateBtn();
+  document.querySelectorAll('.subject-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');updateBtn();
 }
-
-function updateBtn() {
-  document.getElementById('start-btn').disabled = !(selExam&&selSub);
-}
-
-function startQuiz() {
+function updateBtn(){document.getElementById('start-btn').disabled=!(selExam&&selSub);}
+function startQuiz(){
   const n=parseInt(document.getElementById('q-count').value);
   tPerQ=parseInt(document.getElementById('q-time').value);
   const pool=((QUESTIONS[selExam]||{})[selSub])||[];
-  if(!pool.length){alert('No questions yet for this combination. Check back soon!');return;}
+  if(!pool.length){alert('No questions yet for this combination!');return;}
   quiz=[...pool].sort(()=>Math.random()-0.5).slice(0,Math.min(n,pool.length));
-  ans=new Array(quiz.length).fill(null);
-  cur=0; show('quiz'); renderQ();
+  ans=new Array(quiz.length).fill(null);cur=0;show('quiz');renderQ();
 }
-
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+id).classList.add('active');
-}
-
-function renderQ() {
-  clearInterval(timerIv); timeLeft=tPerQ;
-  const q=quiz[cur], tot=quiz.length;
-  document.getElementById('q-meta').textContent=`Question ${cur+1} of ${tot}`;
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+function renderQ(){
+  clearInterval(timerIv);timeLeft=tPerQ;
+  const q=quiz[cur],tot=quiz.length;
+  document.getElementById('q-meta').textContent='Question '+(cur+1)+' of '+tot;
   document.getElementById('progress-fill').style.width=(cur/tot*100)+'%';
-  document.getElementById('q-tag').textContent=`${EXAMS.find(e=>e.id===selExam).label} · ${selSub}`;
+  document.getElementById('q-tag').textContent=(EXAMS.find(e=>e.id===selExam).label)+' · '+selSub;
   document.getElementById('q-text').textContent=q.q;
   const L=['A','B','C','D'];
   document.getElementById('options-list').innerHTML=q.opts.map((o,i)=>
-    `<button class="opt-btn" onclick="pick(${i})" id="o${i}">
-      <span class="opt-letter">${L[i]}</span><span>${o}</span>
-    </button>`).join('');
+    '<button class="option-btn" onclick="pick('+i+')" id="o'+i+'"><span class="option-letter">'+L[i]+'</span><span>'+o+'</span></button>').join('');
   document.getElementById('explanation').style.display='none';
   document.getElementById('btn-next').disabled=true;
   document.getElementById('btn-skip').disabled=false;
-  const badge=document.getElementById('timer-badge');
-  badge.classList.remove('warn');
-  const td=document.getElementById('timer-display');
-  const fmt=t=>`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;
+  const badge=document.getElementById('timer-badge'),td=document.getElementById('timer-display');
+  badge.classList.remove('warning');
+  const fmt=t=>Math.floor(t/60)+':'+(String(t%60).padStart(2,'0'));
   td.textContent=fmt(tPerQ);
-  timerIv=setInterval(()=>{
-    timeLeft--;
-    td.textContent=fmt(timeLeft);
-    if(timeLeft<=10) badge.classList.add('warn');
-    if(timeLeft<=0){clearInterval(timerIv); autoSkip();}
-  },1000);
+  timerIv=setInterval(()=>{timeLeft--;td.textContent=fmt(timeLeft);if(timeLeft<=10)badge.classList.add('warning');if(timeLeft<=0){clearInterval(timerIv);autoSkip();}},1000);
 }
-
-function pick(i) {
-  if(ans[cur]!==null) return;
-  clearInterval(timerIv);
-  ans[cur]=i;
+function pick(i){
+  if(ans[cur]!==null)return;clearInterval(timerIv);ans[cur]=i;
   const q=quiz[cur];
-  document.querySelectorAll('.opt-btn').forEach((b,j)=>{
-    b.disabled=true;
-    if(j===q.ans) b.classList.add('correct');
-    else if(j===i&&i!==q.ans) b.classList.add('wrong');
-  });
-  const ex=document.getElementById('explanation');
-  ex.style.display='block';
-  ex.innerHTML='<strong>Explanation:</strong> '+q.exp;
-  document.getElementById('btn-next').disabled=false;
-  document.getElementById('btn-skip').disabled=true;
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('correct');else if(j===i&&i!==q.ans)b.classList.add('wrong');});
+  const ex=document.getElementById('explanation');ex.style.display='block';ex.innerHTML='<strong>Explanation:</strong> '+q.exp;
+  document.getElementById('btn-next').disabled=false;document.getElementById('btn-skip').disabled=true;
 }
-
-function autoSkip() {
-  if(ans[cur]===null){
-    ans[cur]='skip';
-    document.querySelectorAll('.opt-btn').forEach((b,j)=>{
-      b.disabled=true;
-      if(j===quiz[cur].ans) b.classList.add('reveal');
-    });
-    const ex=document.getElementById('explanation');
-    ex.style.display='block';
-    ex.innerHTML='<strong>Time up!</strong> Correct answer shown. '+quiz[cur].exp;
-    document.getElementById('btn-next').disabled=false;
-    document.getElementById('btn-skip').disabled=true;
-  }
+function autoSkip(){
+  if(ans[cur]===null){ans[cur]='skip';document.querySelectorAll('.option-btn').forEach((b,j)=>{b.disabled=true;if(j===quiz[cur].ans)b.classList.add('reveal');});
+  const ex=document.getElementById('explanation');ex.style.display='block';ex.innerHTML='<strong>Time up!</strong> '+quiz[cur].exp;
+  document.getElementById('btn-next').disabled=false;document.getElementById('btn-skip').disabled=true;}
 }
-
-function skipQuestion() {
-  clearInterval(timerIv); ans[cur]='skip';
-  document.querySelectorAll('.opt-btn').forEach((b,j)=>{
-    b.disabled=true;
-    if(j===quiz[cur].ans) b.classList.add('reveal');
-  });
-  const ex=document.getElementById('explanation');
-  ex.style.display='block';
-  ex.innerHTML='<strong>Skipped.</strong> '+quiz[cur].exp;
-  document.getElementById('btn-next').disabled=false;
-  document.getElementById('btn-skip').disabled=true;
+function skipQuestion(){
+  clearInterval(timerIv);ans[cur]='skip';
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{b.disabled=true;if(j===quiz[cur].ans)b.classList.add('reveal');});
+  const ex=document.getElementById('explanation');ex.style.display='block';ex.innerHTML='<strong>Skipped.</strong> '+quiz[cur].exp;
+  document.getElementById('btn-next').disabled=false;document.getElementById('btn-skip').disabled=true;
 }
-
-function nextQuestion() {
-  cur++;
-  if(cur>=quiz.length){showResults();return;}
-  renderQ();
-}
-
-function showResults() {
-  clearInterval(timerIv); show('result');
+function nextQuestion(){cur++;if(cur>=quiz.length){showResults();return;}renderQ();}
+async function showResults(){
+  clearInterval(timerIv);show('result');
   const correct=ans.filter((a,i)=>a===quiz[i].ans).length;
   const skipped=ans.filter(a=>a==='skip').length;
   const wrong=ans.length-correct-skipped;
@@ -610,20 +387,31 @@ function showResults() {
   document.getElementById('res-wrong').textContent=wrong;
   document.getElementById('res-skip').textContent=skipped;
   document.getElementById('res-title').textContent=pct>=80?'Excellent! 🎉':pct>=50?'Good effort! 👍':'Keep practising! 💪';
-  document.getElementById('res-sub').textContent=`You scored ${pct}% — ${pct>=80?'Outstanding performance!':pct>=50?'You are on the right track. Review the wrong answers.':'Focus on revision and try again.'}`;
+  document.getElementById('res-sub').textContent='You scored '+pct+'% — '+(pct>=80?'Outstanding!':pct>=50?'Review wrong answers and try again.':'Focus on revision and retry.');
   document.getElementById('review-list').innerHTML=quiz.map((q,i)=>{
-    const a=ans[i], ok=a===q.ans, sk=a==='skip';
-    return `<div class="rev-item">
-      <div class="rev-dot ${ok?'c':sk?'s':'w'}"></div>
-      <div class="rev-q">${q.q.length>65?q.q.substring(0,65)+'…':q.q}</div>
-      <div class="rev-r">${ok?'✓ Correct':sk?'– Skipped':'✗ Wrong'}</div>
-    </div>`;
+    const a=ans[i],ok=a===q.ans,sk=a==='skip';
+    return '<div class="review-item"><div class="review-dot '+(ok?'c':sk?'s':'w')+'"></div><div class="q-text">'+(q.q.length>65?q.q.substring(0,65)+'…':q.q)+'</div><div class="q-result">'+(ok?'✓ Correct':sk?'– Skipped':'✗ Wrong')+'</div></div>';
   }).join('');
-}
+  document.getElementById('progress-fill').style.width='100%';
 
+  // Save to Supabase
+  if (currentUser) {
+    const {error} = await sb.from('quiz_results').insert({
+      user_id: currentUser.id,
+      exam_id: selExam,
+      subject: selSub,
+      correct, wrong, skipped,
+      total: ans.length,
+      percentage: pct
+    });
+    if (!error) {
+      document.getElementById('save-note').style.display='block';
+      const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+    }
+  }
+}
 function retryQuiz(){cur=0;ans=new Array(quiz.length).fill(null);show('quiz');renderQ();}
 function goHome(){clearInterval(timerIv);show('home');}
-
 renderExams();
 </script>
 </body>
