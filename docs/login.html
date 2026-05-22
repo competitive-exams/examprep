@@ -53,6 +53,7 @@ input::placeholder{color:var(--white3);}
     <div class="form-group"><label>Email address</label><input type="email" id="l-email" placeholder="you@email.com"/></div>
     <div class="form-group"><label>Password</label><input type="password" id="l-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <button class="btn" id="l-btn" onclick="doLogin()">Log In →</button>
+    <button onclick="switchTab('forgot')" style="background:none;border:none;color:var(--white3);font-size:13px;cursor:pointer;font-family:inherit;margin-top:10px;width:100%;text-align:center;">Forgot password?</button>
   </div>
   <div id="signup-form" style="display:none">
     <div class="form-group"><label>Full name</label><input type="text" id="s-name" placeholder="Your full name"/></div>
@@ -60,6 +61,17 @@ input::placeholder{color:var(--white3);}
     <div class="form-group"><label>Password <span style="color:var(--white3);font-weight:400">(min. 6 characters)</span></label><input type="password" id="s-pass" placeholder="Create a password" onkeydown="if(event.key==='Enter')doSignup()"/></div>
     <button class="btn" id="s-btn" onclick="doSignup()">Create Account →</button>
   </div>
+  <div id="forgot-form" style="display:none">
+  <p style="font-size:13px;color:var(--white2);margin-bottom:1rem;line-height:1.6;">
+    Enter your email address and we'll send you a link to reset your password.
+  </p>
+  <div class="form-group">
+    <label>Email address</label>
+    <input type="email" id="f-email" placeholder="you@email.com"/>
+  </div>
+  <button class="btn" id="f-btn" onclick="doForgotPassword()">Send Reset Link →</button>
+  <button onclick="switchTab('login')" style="background:none;border:none;color:var(--white3);font-size:13px;cursor:pointer;font-family:inherit;margin-top:12px;width:100%;text-align:center;">← Back to Login</button>
+</div>
   <a href="index.html" class="back">← Back to Home</a>
 </div>
 <script>
@@ -71,6 +83,7 @@ sb.auth.getSession().then(({data:{session}})=>{ if(session) location.href='dashb
 function switchTab(t){
   document.getElementById('login-form').style.display=t==='login'?'block':'none';
   document.getElementById('signup-form').style.display=t==='signup'?'block':'none';
+  document.getElementById('forgot-form').style.display=t==='forgot'?'block':'none';
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(t==='login'&&i===0)||(t==='signup'&&i===1)));
   hide();
 }
@@ -87,7 +100,18 @@ async function doLogin(){
   if(error){loading('l-btn',false,'Log In →');show('error',error.message==='Invalid login credentials'?'Wrong email or password. Please try again.':error.message);}
   else location.href='dashboard.html';
 }
-
+async function doForgotPassword(){
+  const email = document.getElementById('f-email').value.trim();
+  if(!email){ show('error','Please enter your email address.'); return; }
+  loading('f-btn', true, 'Send Reset Link →');
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://competitive-exams.github.io/examprep/reset-password.html'
+  });
+  loading('f-btn', false, 'Send Reset Link →');
+  if(error){ show('error', error.message); }
+  else { show('success', '✅ Reset link sent! Check your email inbox (and spam folder).'); }
+}
+  
 async function doSignup(){
   const name=document.getElementById('s-name').value.trim();
   const email=document.getElementById('s-email').value.trim();
