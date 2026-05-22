@@ -115,6 +115,13 @@ function selectPlan(planKey) {
 // ── PAY BUTTON ───────────────────────────────
 // This runs when the student clicks "Unlock Now"
 function initiatePayment() {
+     // ── CHECK IF STUDENT IS LOGGED IN FIRST ──
+  var session = JSON.parse(localStorage.getItem('sb-iugqkcvnzcvyvvbeistr-auth-token') || 'null');
+  if (!session) {
+    alert("⚠️ Please log in first to purchase a plan!\n\nClick OK to go to the login page.");
+    window.location.href = "login.html";
+    return;
+  }
   var plan   = PLANS[selectedPlan];
   var amount = billingYearly ? plan.yearlyAmt : plan.monthlyAmt;
   var period = billingYearly ? "yearly" : "monthly";
