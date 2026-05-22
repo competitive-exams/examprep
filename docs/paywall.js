@@ -120,8 +120,37 @@ function initiatePayment() {
   var period = billingYearly ? "yearly" : "monthly";
 
   // ── STEP A: Remove this alert and replace with Razorpay code (Step 3) ──
-  alert("Payment coming soon! You selected: " + plan.name + " (" + (billingYearly ? plan.yearly + "/yr" : plan.monthly + "/mo") + ")");
-
+  var options = {
+  key: "rzp_live_SsOyiuRGPrjAc5",
+  amount: amount,
+  currency: "INR",
+  name: "Competitive Exams",
+  description: plan.name + " (" + period + ")",
+  image: "https://competitive-exams.github.io/examprep/favicon.ico",
+  handler: function(response) {
+    unlockPremium(selectedPlan, period);
+    alert("🎉 Payment successful! Welcome to " + plan.name + " Pro!\nPayment ID: " + response.razorpay_payment_id);
+  },
+  prefill: {
+    name: "",
+    email: "",
+    contact: ""
+  },
+  notes: {
+    plan: selectedPlan,
+    period: period
+  },
+  theme: {
+    color: "#7c3aed"
+  },
+  modal: {
+    ondismiss: function() {
+      console.log("Payment cancelled by user");
+    }
+  }
+};
+var rzp = new Razorpay(options);
+rzp.open();
   // ── STEP B: After Razorpay confirms payment, call this: ──
   // unlockPremium(selectedPlan, period);
 }
