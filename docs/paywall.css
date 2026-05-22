@@ -11,6 +11,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
+  overflow-y: auto;
 }
 
 #paywall-overlay.active {
@@ -21,8 +22,10 @@
   background: #ffffff;
   border-radius: 20px;
   width: 100%;
-  max-width: 540px;
-  overflow: hidden;
+  max-width: 520px;
+  max-height: 92vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 25px 60px rgba(0,0,0,0.4);
   animation: pw-slide-up 0.3s ease;
 }
