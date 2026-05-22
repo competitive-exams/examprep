@@ -135,7 +135,7 @@ function initiatePayment() {
   description: plan.name + " (" + period + ")",
   image: "https://competitive-exams.github.io/examprep/favicon.ico",
   handler: function(response) {
-    unlockPremium(selectedPlan, period);
+  unlockPremium(selectedPlan, period, response.razorpay_payment_id);
     alert("🎉 Payment successful! Welcome to " + plan.name + " Pro!\nPayment ID: " + response.razorpay_payment_id);
   },
   prefill: {
@@ -164,13 +164,16 @@ rzp.open();
 
 // ── UNLOCK AFTER PAYMENT ─────────────────────
 // Call this ONLY after your backend confirms the payment is real
-function unlockPremium(planKey, period) {
+function unlockPremium(planKey, period, paymentId) {
   var days    = period === "yearly" ? 365 : 30;
   var expires = Date.now() + days * 24 * 60 * 60 * 1000;
 
   localStorage.setItem("premiumPlan", JSON.stringify({
     plan: planKey,
-    expiresAt: expires
+    period: period,
+    expiresAt: expires,
+    purchasedAt: Date.now(),
+    paymentId: paymentId || 'N/A'
   }));
 
   closePaywall();
