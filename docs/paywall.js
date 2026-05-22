@@ -47,10 +47,13 @@ function canStartQuiz(examType) {
 // ── PREMIUM CHECK ────────────────────────────
 // Returns true if the student has an active paid plan for this exam
 function isPremiumUser(examType) {
-  var data = JSON.parse(localStorage.getItem("premiumPlan") || "{}");
-  if (!data.expiresAt) return false;
-  if (Date.now() > data.expiresAt) return false; // plan expired
-  return data.plan === "all" || data.plan === examType;
+  var subs = JSON.parse(localStorage.getItem("premiumSubs") || "[]");
+  var now = Date.now();
+
+  return subs.some(function(s) {
+    if (now > s.expiresAt) return false;        // expired
+    return s.plan === "all" || s.plan === examType; // right plan
+  });
 }
 
 // ── SHOW PAYWALL ─────────────────────────────
@@ -168,14 +171,22 @@ function unlockPremium(planKey, period, paymentId) {
   var days    = period === "yearly" ? 365 : 30;
   var expires = Date.now() + days * 24 * 60 * 60 * 1000;
 
-  localStorage.setItem("premiumPlan", JSON.stringify({
+  // Load existing subscriptions (array)
+  var subs = JSON.parse(localStorage.getItem("premiumSubs") || "[]");
+
+  // Remove old entry for same plan if exists
+  subs = subs.filter(function(s) { return s.plan !== planKey; });
+
+  // Add new subscription
+  subs.push({
     plan: planKey,
     period: period,
     expiresAt: expires,
     purchasedAt: Date.now(),
     paymentId: paymentId || 'N/A'
-  }));
+  });
 
+  localStorage.setItem("premiumSubs", JSON.stringify(subs));
   closePaywall();
   alert("🎉 Welcome to " + PLANS[planKey].name + " Pro! You now have unlimited access.");
 
