@@ -330,6 +330,7 @@ function pickSub(el,s){
 }
 function updateBtn(){document.getElementById('start-btn').disabled=!(selExam&&selSub);}
 function startQuiz(){
+  if (!canStartQuiz(selExam)) return;
   const n=parseInt(document.getElementById('q-count').value);
   tPerQ=parseInt(document.getElementById('q-time').value);
   const pool=((QUESTIONS[selExam]||{})[selSub])||[];
