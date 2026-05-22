@@ -152,69 +152,78 @@ const ICONS = {upsc:'🏛️',banking:'🏦',jee:'⚛️',neet:'🩺',defence:'�
 
 function renderSubscription() {
   var card = document.getElementById('sub-card');
-  var data = JSON.parse(localStorage.getItem('premiumPlan') || 'null');
+  var subs = JSON.parse(localStorage.getItem('premiumSubs') || '[]');
+  var now = Date.now();
 
-  // No plan purchased
-  if (!data || !data.expiresAt) {
+  // No plan at all
+  if (subs.length === 0) {
     card.innerHTML =
       '<div class="sub-top">' +
         '<div class="sub-plan-name">No Active Plan</div>' +
         '<span class="sub-badge free">FREE TIER</span>' +
       '</div>' +
-      '<p class="sub-free-msg">You are on the free plan. You get <span>' + FREE_QUIZ_LIMIT + ' free quizzes</span> per exam category.<br>Upgrade to get unlimited access to all questions.</p>' +
+      '<p class="sub-free-msg">You are on the free plan. You get <span>5 free quizzes</span> per exam category.<br>Upgrade to get unlimited access.</p>' +
       '<div class="sub-actions" style="margin-top:14px">' +
         '<button class="sub-btn primary" onclick="showPaywall(\'upsc\')">🚀 View Plans</button>' +
       '</div>';
     return;
   }
 
-  var now = Date.now();
-  var isActive = now < data.expiresAt;
-  var daysLeft = Math.ceil((data.expiresAt - now) / (1000 * 60 * 60 * 24));
-  var purchaseDate = data.purchasedAt
-    ? new Date(data.purchasedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})
-    : 'N/A';
-  var expiryDate = new Date(data.expiresAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
-  var planName = PLAN_NAMES[data.plan] || data.plan;
-  var period = data.period === 'yearly' ? 'Annual' : 'Monthly';
-  var paymentId = data.paymentId || 'N/A';
+  // Build a card for each subscription
+  var html = '';
+  subs.forEach(function(s, index) {
+    var isActive = now < s.expiresAt;
+    var daysLeft = Math.ceil((s.expiresAt - now) / (1000 * 60 * 60 * 24));
+    var purchaseDate = s.purchasedAt
+      ? new Date(s.purchasedAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})
+      : 'N/A';
+    var expiryDate = new Date(s.expiresAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+    var planName = PLAN_NAMES[s.plan] || s.plan;
+    var period = s.period === 'yearly' ? 'Annual' : 'Monthly';
+    var isLast = index === subs.length - 1;
 
-  card.innerHTML =
-    '<div class="sub-top">' +
-      '<div class="sub-plan-name">' + planName + '</div>' +
-      '<span class="sub-badge ' + (isActive ? 'active' : 'expired') + '">' +
-        (isActive ? '● ACTIVE' : '✕ EXPIRED') +
-      '</span>' +
-    '</div>' +
-    '<div class="sub-details">' +
-      '<div class="sub-detail-item">' +
-        '<div class="sub-detail-label">📅 Purchased On</div>' +
-        '<div class="sub-detail-val">' + purchaseDate + '</div>' +
-      '</div>' +
-      '<div class="sub-detail-item">' +
-        '<div class="sub-detail-label">✅ Valid Until</div>' +
-        '<div class="sub-detail-val ' + (isActive ? 'mint' : 'red') + '">' + expiryDate + '</div>' +
-      '</div>' +
-      '<div class="sub-detail-item">' +
-        '<div class="sub-detail-label">⏳ Days Remaining</div>' +
-        '<div class="sub-detail-val ' + (daysLeft > 7 ? 'mint' : 'red') + '">' +
-          (isActive ? daysLeft + ' days' : 'Expired') +
+    html +=
+      '<div style="' + (!isLast ? 'margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);' : '') + '">' +
+        '<div class="sub-top">' +
+          '<div class="sub-plan-name">' + planName + '</div>' +
+          '<span class="sub-badge ' + (isActive ? 'active' : 'expired') + '">' +
+            (isActive ? '● ACTIVE' : '✕ EXPIRED') +
+          '</span>' +
         '</div>' +
-      '</div>' +
-      '<div class="sub-detail-item">' +
-        '<div class="sub-detail-label">🔄 Billing</div>' +
-        '<div class="sub-detail-val">' + period + '</div>' +
-      '</div>' +
-      '<div class="sub-detail-item">' +
-        '<div class="sub-detail-label">💳 Payment ID</div>' +
-        '<div class="sub-detail-val" style="font-size:12px;word-break:break-all">' + paymentId + '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="sub-actions">' +
-      '<button class="sub-btn primary" onclick="showPaywall(\'all\')">🔄 Renew Plan</button>' +
-      '<button class="sub-btn secondary" onclick="showPaywall(\'all\')">⬆ Upgrade</button>' +
-    '</div>';
+        '<div class="sub-details">' +
+          '<div class="sub-detail-item">' +
+            '<div class="sub-detail-label">📅 Purchased On</div>' +
+            '<div class="sub-detail-val">' + purchaseDate + '</div>' +
+          '</div>' +
+          '<div class="sub-detail-item">' +
+            '<div class="sub-detail-label">✅ Valid Until</div>' +
+            '<div class="sub-detail-val ' + (isActive ? 'mint' : 'red') + '">' + expiryDate + '</div>' +
+          '</div>' +
+          '<div class="sub-detail-item">' +
+            '<div class="sub-detail-label">⏳ Days Remaining</div>' +
+            '<div class="sub-detail-val ' + (daysLeft > 7 ? 'mint' : 'red') + '">' +
+              (isActive ? daysLeft + ' days' : 'Expired') +
+            '</div>' +
+          '</div>' +
+          '<div class="sub-detail-item">' +
+            '<div class="sub-detail-label">🔄 Billing</div>' +
+            '<div class="sub-detail-val">' + period + '</div>' +
+          '</div>' +
+          '<div class="sub-detail-item">' +
+            '<div class="sub-detail-label">💳 Payment ID</div>' +
+            '<div class="sub-detail-val" style="font-size:12px;word-break:break-all">' + (s.paymentId || 'N/A') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="sub-actions">' +
+          '<button class="sub-btn primary" onclick="showPaywall(\'' + s.plan + '\')">🔄 Renew</button>' +
+          '<button class="sub-btn secondary" onclick="showPaywall(\'all\')">⬆ Upgrade to All</button>' +
+        '</div>' +
+      '</div>';
+  });
+
+  card.innerHTML = html;
 }
+
 const NAMES = {upsc:'UPSC / PSC',banking:'Banking / SSC',jee:'JEE',neet:'NEET',defence:'Defence'};
 
 async function load() {
