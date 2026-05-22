@@ -58,6 +58,29 @@ main{max-width:860px;margin:0 auto;padding:2.5rem 5%;}
 .cta-card p{font-size:14px;color:var(--white2);margin-bottom:1.5rem;position:relative;}
 .btn-quiz{display:inline-flex;align-items:center;gap:8px;background:var(--mint);color:#0b1929;padding:13px 32px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;transition:all 0.2s;position:relative;}
 .btn-quiz:hover{background:var(--mint2);transform:translateY(-1px);}
+  /* ── SUBSCRIPTION CARD ── */
+.sub-card{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:22px;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.sub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--mint),var(--mint2));}
+.sub-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.sub-plan-name{font-size:18px;font-weight:700;color:var(--white);}
+.sub-badge{padding:5px 12px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:0.04em;}
+.sub-badge.active{background:rgba(125,216,164,0.15);color:var(--mint);border:1px solid rgba(125,216,164,0.3);}
+.sub-badge.expired{background:rgba(255,138,138,0.15);color:var(--red);border:1px solid rgba(255,138,138,0.3);}
+.sub-badge.free{background:rgba(251,191,36,0.15);color:var(--amber);border:1px solid rgba(251,191,36,0.3);}
+.sub-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px;}
+.sub-detail-item{background:var(--bg3);border-radius:10px;padding:12px 14px;}
+.sub-detail-label{font-size:11px;color:var(--white3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+.sub-detail-val{font-size:14px;font-weight:600;color:var(--white);}
+.sub-detail-val.mint{color:var(--mint);}
+.sub-detail-val.red{color:var(--red);}
+.sub-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.sub-btn{padding:10px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;border:none;}
+.sub-btn.primary{background:var(--mint);color:#0b1929;}
+.sub-btn.primary:hover{background:var(--mint2);}
+.sub-btn.secondary{background:var(--bg3);color:var(--white2);border:1px solid var(--border);}
+.sub-btn.secondary:hover{border-color:var(--border2);color:var(--white);}
+.sub-free-msg{font-size:13px;color:var(--white3);line-height:1.6;}
+.sub-free-msg span{color:var(--mint);font-weight:600;}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:70vh;gap:14px;}
 .spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--mint);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -95,6 +118,9 @@ main{max-width:860px;margin:0 auto;padding:2.5rem 5%;}
     <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-val" id="s-exams">0</div><div class="stat-lbl">Exams Tried</div></div>
   </div>
 
+  <!-- SUBSCRIPTION SECTION -->
+<div class="sec-title">My Subscription</div>
+<div class="sub-card" id="sub-card"></div>
   <div class="sec-title" id="perf-title" style="display:none">Performance by Exam</div>
   <div class="perf-card" id="perf-card" style="display:none"></div>
 
@@ -115,6 +141,80 @@ main{max-width:860px;margin:0 auto;padding:2.5rem 5%;}
 const { createClient } = supabase;
 const sb = createClient('https://iugqkcvnzcvyvvbeistr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1Z3FrY3ZuemN2eXZ2YmVpc3RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyNDU1MDgsImV4cCI6MjA5NDgyMTUwOH0.qYw0DCUn49TBoKr6LHfrvJGlPEMsbRLXGXz7Zux5U8o');
 const ICONS = {upsc:'🏛️',banking:'🏦',jee:'⚛️',neet:'🩺',defence:'🛡️'};
+  const PLAN_NAMES = {
+  upsc:'UPSC / State PSC 🏛️',
+  banking:'Banking / SSC 🏦',
+  jee:'JEE ⚛️',
+  neet:'NEET 🩺',
+  defence:'Defence 🛡️',
+  all:'All Exams Bundle 🎯'
+};
+
+function renderSubscription() {
+  var card = document.getElementById('sub-card');
+  var data = JSON.parse(localStorage.getItem('premiumPlan') || 'null');
+
+  // No plan purchased
+  if (!data || !data.expiresAt) {
+    card.innerHTML =
+      '<div class="sub-top">' +
+        '<div class="sub-plan-name">No Active Plan</div>' +
+        '<span class="sub-badge free">FREE TIER</span>' +
+      '</div>' +
+      '<p class="sub-free-msg">You are on the free plan. You get <span>' + FREE_QUIZ_LIMIT + ' free quizzes</span> per exam category.<br>Upgrade to get unlimited access to all questions.</p>' +
+      '<div class="sub-actions" style="margin-top:14px">' +
+        '<button class="sub-btn primary" onclick="showPaywall(\'upsc\')">🚀 View Plans</button>' +
+      '</div>';
+    return;
+  }
+
+  var now = Date.now();
+  var isActive = now < data.expiresAt;
+  var daysLeft = Math.ceil((data.expiresAt - now) / (1000 * 60 * 60 * 24));
+  var purchaseDate = data.purchasedAt
+    ? new Date(data.purchasedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})
+    : 'N/A';
+  var expiryDate = new Date(data.expiresAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+  var planName = PLAN_NAMES[data.plan] || data.plan;
+  var period = data.period === 'yearly' ? 'Annual' : 'Monthly';
+  var paymentId = data.paymentId || 'N/A';
+
+  card.innerHTML =
+    '<div class="sub-top">' +
+      '<div class="sub-plan-name">' + planName + '</div>' +
+      '<span class="sub-badge ' + (isActive ? 'active' : 'expired') + '">' +
+        (isActive ? '● ACTIVE' : '✕ EXPIRED') +
+      '</span>' +
+    '</div>' +
+    '<div class="sub-details">' +
+      '<div class="sub-detail-item">' +
+        '<div class="sub-detail-label">📅 Purchased On</div>' +
+        '<div class="sub-detail-val">' + purchaseDate + '</div>' +
+      '</div>' +
+      '<div class="sub-detail-item">' +
+        '<div class="sub-detail-label">✅ Valid Until</div>' +
+        '<div class="sub-detail-val ' + (isActive ? 'mint' : 'red') + '">' + expiryDate + '</div>' +
+      '</div>' +
+      '<div class="sub-detail-item">' +
+        '<div class="sub-detail-label">⏳ Days Remaining</div>' +
+        '<div class="sub-detail-val ' + (daysLeft > 7 ? 'mint' : 'red') + '">' +
+          (isActive ? daysLeft + ' days' : 'Expired') +
+        '</div>' +
+      '</div>' +
+      '<div class="sub-detail-item">' +
+        '<div class="sub-detail-label">🔄 Billing</div>' +
+        '<div class="sub-detail-val">' + period + '</div>' +
+      '</div>' +
+      '<div class="sub-detail-item">' +
+        '<div class="sub-detail-label">💳 Payment ID</div>' +
+        '<div class="sub-detail-val" style="font-size:12px;word-break:break-all">' + paymentId + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="sub-actions">' +
+      '<button class="sub-btn primary" onclick="showPaywall(\'all\')">🔄 Renew Plan</button>' +
+      '<button class="sub-btn secondary" onclick="showPaywall(\'all\')">⬆ Upgrade</button>' +
+    '</div>';
+}
 const NAMES = {upsc:'UPSC / PSC',banking:'Banking / SSC',jee:'JEE',neet:'NEET',defence:'Defence'};
 
 async function load() {
@@ -173,6 +273,7 @@ async function load() {
     document.getElementById('history-card').innerHTML = histHtml;
   }
 
+  renderSubscription();
   document.getElementById('loading').style.display='none';
   document.getElementById('main').style.display='block';
 }
