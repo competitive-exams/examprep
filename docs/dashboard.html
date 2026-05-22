@@ -183,6 +183,99 @@ async function doLogout() {
 
 load();
 </script>
-<script src="paywall.js"></script>
+<!-- Paywall Overlay -->
+<div id="paywall-overlay">
+  <div class="pw-modal">
+
+    <!-- Header -->
+    <div class="pw-header">
+      <div class="pw-badge">Free limit reached</div>
+      <h2 id="pw-title">You've completed 5 free UPSC quizzes!</h2>
+      <p>Upgrade to practise unlimited questions and score higher</p>
+      <div class="pw-used-bar">
+        <span class="pw-used-dot"></span>
+        <span id="pw-used-text">5 of 5 free quizzes used · 0 remaining</span>
+      </div>
+    </div>
+
+    <!-- Monthly / Yearly Toggle -->
+    <div class="pw-toggle-row">
+      <span>Monthly</span>
+      <button class="pw-toggle-btn" id="pw-toggle" onclick="toggleBilling()" aria-label="Toggle billing period">
+        <div class="pw-toggle-knob"></div>
+      </button>
+      <span>Yearly &nbsp;<span class="pw-save-badge">Save 58%</span></span>
+    </div>
+
+    <!-- Individual Exam Plan Cards (2×2 grid) -->
+    <div class="pw-plans-grid">
+
+      <div class="pw-plan-card" id="pw-card-upsc" onclick="selectPlan('upsc')">
+        <div class="pw-plan-emoji">🏛️</div>
+        <div class="pw-plan-name">UPSC / PSC</div>
+        <div class="pw-plan-sub">Civil services prep</div>
+        <div class="pw-plan-price" id="pw-price-upsc">₹199<span>/mo</span></div>
+      </div>
+
+      <div class="pw-plan-card" id="pw-card-banking" onclick="selectPlan('banking')">
+        <div class="pw-plan-emoji">🏦</div>
+        <div class="pw-plan-name">Banking / SSC</div>
+        <div class="pw-plan-sub">IBPS, SBI PO, CGL</div>
+        <div class="pw-plan-price" id="pw-price-banking">₹149<span>/mo</span></div>
+      </div>
+
+      <div class="pw-plan-card" id="pw-card-jee" onclick="selectPlan('jee')">
+        <div class="pw-plan-emoji">⚛️</div>
+        <div class="pw-plan-name">JEE</div>
+        <div class="pw-plan-sub">Main & Advanced</div>
+        <div class="pw-plan-price" id="pw-price-jee">₹199<span>/mo</span></div>
+      </div>
+
+      <div class="pw-plan-card" id="pw-card-neet" onclick="selectPlan('neet')">
+        <div class="pw-plan-emoji">🩺</div>
+        <div class="pw-plan-name">NEET</div>
+        <div class="pw-plan-sub">Medical entrance</div>
+        <div class="pw-plan-price" id="pw-price-neet">₹199<span>/mo</span></div>
+      </div>
+
+    </div>
+
+    <!-- All Exams Bundle (full width, highlighted) -->
+    <div class="pw-all-plan" id="pw-card-all" onclick="selectPlan('all')">
+      <span class="pw-popular-badge">Most popular</span>
+      <div>
+        <div class="pw-all-name">🎯 All Exams Bundle</div>
+        <div class="pw-all-sub">All 5 categories including Defence · Unlimited</div>
+      </div>
+      <div class="pw-all-price" id="pw-price-all">
+        ₹399<span>/mo</span>
+      </div>
+    </div>
+
+    <!-- Feature Pills -->
+    <div class="pw-features">
+      <div class="pw-feat"><span class="pw-feat-dot"></span> Unlimited quizzes</div>
+      <div class="pw-feat"><span class="pw-feat-dot"></span> Instant explanations</div>
+      <div class="pw-feat"><span class="pw-feat-dot"></span> Progress tracking</div>
+      <div class="pw-feat"><span class="pw-feat-dot"></span> Works on mobile</div>
+    </div>
+
+    <!-- Pay Button -->
+    <div class="pw-cta-area">
+      <button class="pw-cta-btn" onclick="initiatePayment()">
+        Unlock Now with Razorpay →
+      </button>
+      <div class="pw-cta-note">UPI · Debit/Credit Card · Net Banking · Cancel anytime</div>
+    </div>
+
+    <!-- Skip -->
+    <button class="pw-skip" onclick="closePaywall()">
+      Maybe later, go back to free mode
+    </button>
+
+  </div>
+</div>
+<!-- End Paywall Modal -->
+  <script src="paywall.js"></script>
 </body>
 </html>
